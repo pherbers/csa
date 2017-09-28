@@ -19,6 +19,7 @@
 import math as _math
 import random as _random
 import numpy as _numpy
+from scipy.spatial import KDTree
 
 import intervalset as _iset
 
@@ -141,10 +142,9 @@ def random3d(N, xScale = 1.0, yScale = 1.0, zScale = 1.0):
     g.xScale = xScale
     g.yScale = yScale
     g.zScale = zScale
+    g._kdtree = KDTree(coords)
     g.inverse = lambda x, y, z, domain=_iset.IntervalSet ((0, N - 1)): \
-                    _numpy.array ([euclidDistance3d (_numpy.array((x, y, z)), g(i)) \
-                                   for i in domain]).argmin () \
-                                   + domain.min ()
+                    g._kdtree.query((x, y, z))[1]
     return g
 
 def euclidDistance3d(p1, p2):
